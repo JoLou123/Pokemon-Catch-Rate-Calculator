@@ -1,0 +1,31 @@
+cordova build --release android -- --ant
+
+keytool -genkey -v -keystore alert-key.keystore
+-alias alert-key -keyalg RSA -keysize 2048 -validity 10000
+
+CORDOVA_ANDROID_GRADLE_DISTRIBUTION_URL=file:///home/jo/Source_Code/gradle-2.2.1-all.zip
+
+
+ant.properties
+
+key.store.password=PassWord123!
+key.alias.password=PassWord123!
+key.store=alert-key.keystore
+key.alias=my key
+
+
+
+release-signing.properties
+
+storeFile = ~/Source_Code/platforms/android/alert-key.keystore
+storeType = jks
+keyAlias = "alert-key"
+keyPassword = PassWord123!
+storePassword = PassWord123!
+
+
+sh apksigner sign --ks ~/Source_Code/platforms/android/alert-key.keystore --out ~/Source_Code/platforms/android/SignedApp.apk ~/Source_Code/platforms/android/bin/MainActivity-release-unsigned.apk
+
+jarsigner -verbose -sigalg SHA1withDSA -digestalg SHA1 -keystore ~/Source_Code/platforms/android/bin/alert-key.keystore ~/Source_Code/platforms/android/bin/MainActivity-release-unsigned.apk mykey
+
+zipalign -v 4 ~/Source_Code/platforms/android/bin/MainActivity-release-unsigned.apk ~/Source_Code/platforms/android/bin/EmergencyApp.apk

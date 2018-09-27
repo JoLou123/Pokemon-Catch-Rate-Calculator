@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+    <title></title>
+
+    <link rel="manifest" href="manifest.json">
+
+    <!-- un-comment this code to enable service worker
+    <script>
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('service-worker.js')
+          .then(() => console.log('service worker installed'))
+          .catch(err => console.log('Error', err));
+      }
+    </script>-->
+
+    <link href="lib/ionic/css/ionic.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="lib/angularjs-slider/dist/rzslider.css"/>
+    <!-- IF using Sass (run gulp sass first), then uncomment below and remove the CSS includes above
+    <link href="css/ionic.app.css" rel="stylesheet">
+    -->
+
+    <!-- ionic/angularjs js -->
+    <script src="lib/ionic/js/ionic.bundle.js"></script>
+	<script src="ng-cordova-master/dist/ng-cordova.min.js"></script>
+	<script src="angular/angular.js"></script>
+	<script src="angular-resource/angular-resource.js"></script>
+	<script src="lib/angular/angular.min.js"></script>
+	<script src="lib/angular-animate/angular-animate.js"></script>
+	<script src="lib/angular-animate/angular-animate.min.js"></script>
+	<script src="lib/angularjs-slider/dist/rzslider.min.js"></script>
+	<script src="lib/angular-spinner/dist/angular-spinner.js"></script>
+	<script src="lib/angular-spinner/dist/angular-spinner.min.js"></script>
+    <!-- cordova script (this will be a 404 during development) -->
+    <script src="cordova.js"></script>
+	
+    <!-- your app's js -->
+	<script src="js/services.js"></script>
+    <script src="js/app.js"></script>
+	
+  </head>
+  <body ng-app="starter">
+    <ion-pane>
+     <!-- <ion-header-bar class="bar-stable">
+        <h1 class="title">Catch Rate Calculator</h1>
+      </ion-header-bar>-->
+      <ion-content>
+	  <!-- Loading stuff-->
+		<div class="m-app-loading" ng-animate="'animate'">
+
+        <!--
+            HACKY CODE WARNING: I'm putting Style block inside directive so that it
+            will be removed from the DOM when we remove the directive container.
+        -->
+        <style type="text/css">
+            div.m-app-loading {
+                position: fixed ;
+				background-color: rgb(163, 73,164);
+				width: 1500px;
+				height: 1500px;
+            }
+            div.m-app-loading div.animated-container {
+				background: #A34AA3;         
+                opacity: 1.0 ;
+                position: fixed ;
+                z-index: 999999 ;
+				width: 100%;
+				height: 100%;
+            }
+            /* Used to initialize the ng-leave animation state. */
+            div.m-app-loading div.animated-container.ng-leave {
+                opacity: 1.0 ;
+                transition: all linear 200ms ;
+                    -webkit-transition: all linear 200ms ;
+            }
+            /* Used to set the end properties of the ng-leave animation state. */
+            div.m-app-loading div.animated-container.ng-leave-active {
+                opacity: 0 ;
+            }
+            div.m-app-loading div.messaging {
+                font-family: monospace;
+                left: 0px ;
+                margin-top: -37px ;
+                position: relative;
+                right: 0px ;
+                text-align: center ;
+				top:50%;
+				left:45%;
+            }
+            div.m-app-loading h1 {
+                font-size: 26px ;
+				color: #FFFFFF;
+                text-align: center;
+				position: absolute;
+            }
+            div.m-app-loading p {
+                position: absolute;
+				left: 50px;
+				top:150px;
+			}	
+				
+        </style>
+
+
+        <!-- BEGIN: Actual animated container. -->
+        <div class="animated-container">
+
+            <div class="messaging">
+                <h1>
+                    Loading...
+                </h1>
+				<p><span us-spinner="{color:'white', radius:30, width:8, length:16}"></span></p>
+            </div>
+
+        </div>
+        <!-- END: Actual animated container. -->
+
+    </div>
+    <!-- END: App-Loading Screen. -->
+
+
+
+		
+	
+	<!-- Actual Stuff-->
+		<div ng-controller="Selections">
+			<br>
+			Choose a pokemon: <select ng-model="selectedpokemon" ng-change="changedpokemon(selectedpokemon)" ng-options="pokemon.name for pokemon in pokemon | orderBy: 'name'"></select>
+			<br>
+		<!--	Or Search for a pokemon: <input type="value" ng-model="searched.mon" ng-change="changedsearch()">
+									 <select ng-if="SearchNotEmpty" ng-model="mon.results" ng-change="changedpokemon(selectedpokemon)" ng-options="pokemon.name for pokemon in pokemon | orderBy: 'name'"></select> 
+			<br>-->
+			<br>
+			HP Percentage: <input type="value" ng-model="slider.value" ng-change="changedhp()"> %
+			<div ng-if="Showslider"><rzslider rz-slider-model="slider.value" rz-slider-options="slider.options"></rzslider></div>
+		  <br>
+		  <br>
+			Status: <select ng-model="selectedstatus" ng-change="changedstatus(selectedstatus)" ng-options="status.type for status in status | orderBy:'+status.id'"></select>
+			<br>
+			<br>
+			Pokeball: <select ng-model="selectedball" ng-change="changedball(selectedball)" ng-options="pokeball.ball for pokeball in pokeball | orderBy:'+ball.id'"></select>
+				<div ng-if="NestEnabled">
+					Enter pokemon's level: <input type="value" value="" name="nest" ng-model="pokeball.boostmultiplier" ng-change="changedlevel(level)">	
+				</div>
+				<div ng-if="DiveEnabled">
+					Are you surfing? <input type="checkbox" ng-model="pokeball.boostmultiplier" ng-change="changedlocation()">
+				</div>
+				<div ng-if="RepeatEnabled">
+					Have you caught this pokemon before? <input type="checkbox" ng-model="pokeball.boostmultiplier" ng-change="changedlocation()">
+				</div>
+				<div ng-if="TimerEnabled">
+					Current Turn: <input type="value" name="timer" ng-model="pokeball.boostmultiplier" ng-change="changedturn(turn)">
+				</div>
+				<div ng-if="DuskEnabled">
+					Is it nighttime or are you in a cave? <input type="checkbox" ng-model="pokeball.boostmultiplier" ng-change="changedlocation()">
+				</div>
+				<div ng-if="QuickEnabled">
+					Is it the first turn? <input type="checkbox" ng-model="pokeball.boostmultiplier" ng-change="changedlocation()">
+				</div>
+				<div ng-if="BeastEnabled">
+					Are you trying to catch an Ultra Beast? <input type="checkbox" ng-model="pokeball.boostmultiplier" ng-change="changedlocation()">
+				</div>
+			<br>
+			<br>
+			How many pokemon do you have in your pokedex? <input type="value" ng-model="pokedex.no" ng-change="changeddexno()">
+			<div ng-if="invalid">Please enter a valid number!</div>
+			<br>
+			<br>
+			<br>Your Normal catch rate is: {{normalprob}} %
+			<br>Your critical capture rate is: {{ccprob}} %
+			<br>Your Final Catch Rate is: {{catchrate}} %
+		</div>
+		<div ng-controller="Selections">
+			<!--<button ng-click="DoTheMath()">Calculate</button>
+			<br>Catch Rate: {{catchrate}}-->
+		</div>
+      </ion-content>
+    </ion-pane>
+  </body>
+</html>

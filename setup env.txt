@@ -1,0 +1,175 @@
+Environment setup: 
+1. VirtualBox-4.3.28-100309-Win.exe 
+2. ubuntu  (use 32 bit)
+========================================================================================
+
+Requirements :    
+    Java JDK
+    Apache Ant
+    Android SDK
+    NodeJS / NPM
+    Apache Cordova
+    Ionic Framework (https://ionicframework.com/docs/v1/)
+========================================================================================
+	
+On Ubuntu
+1. install ant	
+	$sudo apt-get install ant 
+
+2. install jdk 8
+   $ sudo -E add-apt-repository ppa:webupd8team/java    // added -E to through proxy
+   $ sudo apt-get update
+   $ sudo apt-get install oracle-java8-installer
+   
+   
+   Configuring Java Environment 
+   $ sudo apt-get install oracle-java8-set-default
+   
+   Also ensure your JAVA_HOME variable has been set to:
+   vi .profile, add
+    export JAVA_HOME=/usr/lib/jvm/java-8-oracle	
+
+   check installation
+	$ sudo dpkg --list | grep -i jdk
+
+3. install android sdk	
+
+	http://developer.android.com/sdk/installing/index.html?pkg=tools
+
+	a.) download http://dl.google.com/android/android-sdk_r24.3.3-linux.tgz
+	b.) sudo tar zxf android-sdk_r24.3.3-linux.tgz -C /opt
+	c.) cd /opt
+	d.) sudo mv android-sdk-linux/ android-sdk
+	e.) sudo chown root:root "android-sdk" -R           // or change to your own user/group
+	f.) sudo chmod 777 "android-sdk" -R
+	g.) gedit ~/.bashrc, added
+
+	    export http_proxy=http://172.31.254.65:8080
+        export https_proxy=http://172.31.254.65:8080
+        export JAVA_HOME=/usr/lib/jvm/java-8-oracle
+
+
+	    ANDROID_SDK_PATH=/opt/android-sdk
+        export PATH=$PATH:$ANDROID_SDK_PATH/tools
+        export PATH=$PATH:$ANDROID_SDK_PATH/platform-tools
+
+4. Solution is to set https proxy server and port in ~/.gradle/gradle.properties file. In my case, http parameters seems useless.
+
+systemProp.http.proxyHost=172.31.254.65
+systemProp.http.proxyPort=8080
+
+systemProp.https.proxyHost=172.31.254.65
+systemProp.https.proxyPort=8080		
+	
+5. install node.js(v0.10.25) and npm
+
+   $ sudo apt-get update
+   $ sudo apt-get install nodejs
+   $ sudo apt-get install npm
+	
+6. To install Cordova, make sure you have Node.js installed, then run		
+
+	sudo -E apt-add-repository ppa:cordova-ubuntu/ppa  // added -E for proxy
+	sudo apt-get update
+	sudo apt-get install cordova-cli
+	npm install -g cordova
+
+	https://cordova.apache.org/docs/en/4.0.0/guide_cli_index.md.html
+	https://www.npmjs.com/package/cordova
+
+
+	a. npm proxy
+	npm config ls -l
+	npm config set proxy http://172.31.254.65:8080
+	npm config set registry http://registry.npmjs.org/
+
+
+	b. git proxy
+	$ git config --global http.proxy $http_proxy
+	$ git config --global https.proxy $https_proxy
+
+	git config --system --add http.proxy http://172.31.254.65:8080
+	git config --global --list
+
+	c. Cordova proxy
+	If your workstation is connected to the Web via a proxy server, create a file named C:\Users\<your user>\.plugman\config and add the same proxy settings you assigned using the npm command.
+	proxy = <proxy server:port>
+	https-proxy = <proxy server:port>		
+
+	plugman config set proxy  http://172.31.254.65:8080
+	plugman config set https-proxy  http://172.31.254.65:8080	
+	
+7. ionic framework
+   $ npm install -g ionic	
+
+
+   a. Emulating your app
+    Deploys the Ionic app on specified platform emulator. This is simply an alias for run --emulator.
+
+    $ ionic emulate android [options]
+
+    b. Running your app
+    Deploys the Ionic app on specified platform devices. If a device is not found it’ll then deploy to an emulator/simulator.
+
+    $ ionic run android [options]
+========================================================================================	
+android emulator error 
+
+OpenGL Warning: glVertexArrayRangeNV not found in mesa table
+This problem is supposedly caused only when you have 3D acceleration turned on for the Ubuntu virtual machine. VirtualBox does not support OpenGL 3.0 and later. So, programs that expect those OpenGL extensions might crash.
+
+a.)
+developer option is hidden by default on 4.3
+to enable go to settings-->About Phone-->tap "Build number" 7 times
+
+b.)
+adb devices -l
+adb connect <ip address>
+adb disconnect 172.31.19.189:5555
+adb logcat
+
+GUI tools
+/opt/android-sdk/tools/monitor
+
+d.)to view console or $log messages from the device in Chrome..
+Click the hamburger menu on the top right -> More Tools -> Inspect Devices
+
+
+
+========================================================================================	
+Android Publishing and install on Andorid
+
+
+$ cordova build --release android
+
+$ cd /home/rchen/dev/deploy/MobileAlert
+$ cp /home/rchen/dev/MobileAlert/ionic/platforms/android/build/outputs/apk/android-release-unsigned.apk .
+
+$jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore my-release-key.keystore android-release-unsigned.apk alias_name
+password: 1234qwer
+
+$/opt/android-sdk/build-tools/22.0.1/zipalign -v 4 android-release-unsigned.apk MobileAlert.apk
+
+rchen@rchen-vb:~/dev/MobileAlert/ionic$ adb connect 172.31.19.160
+connected to 172.31.19.160:5555
+
+rchen@rchen-vb:~/dev/MobileAlert/ionic$ adb devices
+List of devices attached
+172.31.19.160:5555	device
+
+
+~/dev/deploy/MobileAlert/android$ adb install MobileAlert.apk
+
+===========================
+Remote Debugging - Android and Chrome
+
+https://ionicframework.com/docs/v2/resources/developer-tips/
+
+go to chrome://inspect/#devices in Chrome and inspect your Android device. 
+ote: you may need to change the settings on your device to allow USB debugging. 
+From there, you can use Chrome to debug your application just like it is in the browser!
+
+=============================
+TwiML
+http://wat098.waterloo.ca/cct/content/xml/securityalert.cshtml?username=Richard%20Chen&userphone=5197476262
+http://wat098.waterloo.ca/cct/content/xml/firstaidalert.cshtml?username=Richard%20Chen&userphone=5197476262

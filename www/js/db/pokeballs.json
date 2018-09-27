@@ -1,0 +1,17 @@
+[
+	{"pokeball":[1, "Pokeball", 1.0, 1.0]},
+	{"pokeball":[2, "Great Ball", 1.5, 1.5]},
+	{"pokeball":[4, "Ultra Ball", 2.0, 2.0]},
+	{"pokeball":[5, "Master Ball", 255, 255]},
+	{"pokeball":[6, "Net Ball", 3.5, 1.0]},
+	{"pokeball":[7, "Dive Ball", 3.5, 1.0]},
+	{"pokeball":[8, "Repeat Ball", 3.0, 1.0]},
+	{"pokeball":[9, "Dusk Ball", 3.5, 1.0]},
+	{"pokeball":[10, "Quick Ball", 5.0, 1.0]},
+	{"pokeball":[11, "Beast Ball", 5.0, 0.1]},
+	{"pokeball":[12, "Premier Ball", 1.0, 1.0]},
+	{"pokeball":[13, "Luxury Ball", 1.0, 1.0]},
+	{"pokeball":[14, "Heal Ball", 1.0, 1.0]},
+	{"pokeball":[15, "Nest Ball", 1.0, 1.0]},
+	{"pokeball":[16, "Timer Ball", 1.0, 1.0]}
+]
